@@ -1,5 +1,5 @@
 import numpy as np
-import numpy.linalg
+
 def pca_reduction(data, n_components):
 # function to perform dimensionality reduction using Principal Components Analysis 
 # data: the data that needs to be reduced
@@ -31,4 +31,4 @@ def svd_reduction(data):
 	reduced_data = np.matmul(u[:, 0:n_s], np.diag(s)[0:n_s, 0:n_s])		# reduce the data dimension
 	recovered_data = np.matmul(reduced_data, v[0:n_s, :])	# recover the data 
 	error_rate = abs(np.sum(np.square(data - recovered_data)) / np.sum(np.square(data)))		# calculate the error rate between the original data and the recovered one
-	return reduced_data, v[0:n_s, :].transpose(), error_rate
+	return reduced_data, v[0:n_s, :].transpose()

@@ -1,16 +1,12 @@
 import numpy as np 
-import h5py as hp 
-import scipy.io as sio
-from dim_reduction import svd_reduction 
-
-# data = hp.File('data_5000.mat')
-# acc_signal = np.array(data['data_5000/acc_signal']).transpose()
-data = hp.File('data_10.mat')
-acc_signal = np.array(data['data/acc_signal']).transpose()
-acc_signal = acc_signal['real'] + acc_signal['imag'] * 1j
-# acc_signal = acc_signal['real']
-reduced_signal, principal_dir, error_rate = svd_reduction(acc_signal)
-reduced_signal = {'signal': reduced_signal, 'principal_dir': principal_dir}
-# sio.savemat('reduced_signal_5000.mat', reduced_signal)
-sio.savemat('reduced_signal_10.mat', reduced_signal)
-print('done')
+import scipy.io as sio 
+from model_func import import_data, split_set
+filename = 'data_10.mat'
+signal = 'data/acc_signal'
+thickness = 'data/thickness'
+print('start read')
+signal, thickness, principal_dir = import_data(filename, signal, thickness)
+training, testing = split_set(signal, thickness)
+sio.savemat('test.mat', training)
+print('principal_dir')
+print(principal_dir.shape)
