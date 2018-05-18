@@ -18,6 +18,7 @@ def svd_reduction(data):
 	# perform dimensionality reduction using Singular Value Decomposition 
 	# we aim to retain 95% of the input data
 	# data: input dataset that needs to be reduced
+	data = data - np.mean(data, axis=0)		# adjust the data to the center
 	u, s, v = np.linalg.svd(data)		# decomposes data matrix in to 3 components (X = U*S*V')
 	goal = np.sum(np.square(s))	* 0.95	# we aim to retain 95% of the total data
 	check = 0	# store the temporary sum of the singular value 
@@ -29,5 +30,5 @@ def svd_reduction(data):
 	# after the while loop, the value of n_s is the correct number of values
 	reduced_data = np.matmul(u[:, 0:n_s], np.diag(s)[0:n_s, 0:n_s])		# reduce the data dimension
 	recovered_data = np.matmul(reduced_data, v[0:n_s, :])	# recover the data 
-	error_rate = np.sum(np.square(data - recovered_data)) / np.sum(np.square(data))		# calculate the error rate between the original data and the recovered one
-	return reduced_data, n_s, error_rate
+	error_rate = abs(np.sum(np.square(data - recovered_data)) / np.sum(np.square(data)))		# calculate the error rate between the original data and the recovered one
+	return reduced_data, v[0:n_s, :].transpose(), error_rate
