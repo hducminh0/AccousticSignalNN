@@ -179,12 +179,13 @@ for s = 1:10
 	end
 	data.acc_signal(s, :) = signalref;
 
-	Temps = (1:length(signalref))*Deltat*1e6 ;
-	figure
-	plot(Temps, real((signalref))/max(real(signalref)), 'b', 'LineWidth', 2) ;
-	hold on
-	plot(Temps, imag((signalref))/max(real(signalref)), 'r', 'LineWidth', 2) ;
+% 	Temps = (1:length(signalref))*Deltat*1e6 ;
+% 	figure
+% 	plot(Temps, real((signalref))/max(real(signalref)), 'b', 'LineWidth', 2) ;
+% 	hold on
+% 	plot(Temps, imag((signalref))/max(real(signalref)), 'r', 'LineWidth', 2) ;
 end
+data.acc_signal = awgn(data.acc_signal, 10);
 % data.thickness = data.thickness';
 % save('test.mat', 'data');
 % length(frequence);

@@ -1,7 +1,6 @@
 import numpy as np 
 import scipy.io as sio
-import h5py as hp 
-from dim_reduction import svd_reduction
+import h5py as hp
 
 def bias(data):
 # add bias terms to the first column of the data

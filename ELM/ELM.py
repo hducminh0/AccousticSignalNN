@@ -18,7 +18,7 @@ print('prepare time: ', end - start)
 print('start training')
 start = time.time()
 np.random.seed(seed = None)
-input_w = np.random.normal(size = (training['signal'].shape[1], 10000))	# randomize input weights of the network 
+input_w = np.random.normal(size = (training['signal'].shape[1], 5000))	# randomize input weights of the network 
 h = hidden(training['signal'], input_w)		# output of the hidden layer
 output_w = np.linalg.lstsq(h, training['thickness'])[0]		# use least square to find the optimal output weight 
 end = time.time()
