@@ -36,12 +36,12 @@ def mse(approx, expected):
 	return np.sum((approx - expected) ** 2, axis=0)/(len(expected))		# mse to see how well the model performs 
 	
 def sigmoid(x):
-	return 1/(1 + np.exp(x))
+	return 1/(1 + np.exp(-x))
 
 def hidden(signal, input_w):
 # ha node in the hidden layer of the neural network 
 # input_w: input weight of the hidden layer 
-	return sigmoid(np.dot(signal, input_w))
+	return sigmoid(np.matmul(signal, input_w))
 
 def import_raw(filename, signal = 'data/acc_signal', thickness = 'data/thickness'):
 # load the raw data for dimension reduction and training

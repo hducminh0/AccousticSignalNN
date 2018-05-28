@@ -27,7 +27,7 @@ close all
 %         % Vitesses des ondes transverses dans les couches
 %         vt = [1659 3100 2900] ;
 % end
-for s = 1:10000
+for s = 1:1
    
     s
 	data.thickness(s) = (round(rand() * 999) + 1)  * 10^-6
@@ -185,5 +185,5 @@ for s = 1:10000
 % 	hold on
 % 	plot(Temps, imag((signalref))/max(real(signalref)), 'r', 'LineWidth', 2) ;
 end
-data.thickness = data.thickness';
-save('data_10000_10_vf.mat', 'data');
+% data.thickness = data.thickness';
+% save('data_10000_50_vf.mat', 'data');
