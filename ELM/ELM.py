@@ -1,43 +1,75 @@
 import numpy as np
-import scipy.io as sio
 import matplotlib.pyplot as plt
+import scipy.io as sio
 import time
 from model_func import *
 
 # filename = 'data_10.mat'
 # filename = 'data_5000.mat'
-filename = 'data_10000_10.mat'
+filename = 'data_10000_100_vf.mat'
 
 print('read data')
-start = time.time()
-training, testing = import_raw(filename)
-end = time.time()
-print('prepare time: ', end - start)
+# start = time.time()
+training, testing, m, n = import_raw(filename)
+# end = time.time()
+# print('prepare time: ', end - start)
 
-# start training the model
+n_nodes = 4300	# number of node in the hidden layer
 print('start training')
 start = time.time()
 np.random.seed(seed = None)
-input_w = np.random.normal(size = (training['signal'].shape[1], 5000))	# randomize input weights of the network 
+input_w = np.random.normal(size = (training['signal'].shape[1], n_nodes))	# randomize input weights of the network 
 h = hidden(training['signal'], input_w)		# output of the hidden layer
-output_w = np.linalg.lstsq(h, training['thickness'])[0]		# use least square to find the optimal output weight 
+output_w = np.linalg.lstsq(h, training['thickness'], rcond = None)[0]		# use least square to find the optimal output weight 
 end = time.time()
 print('training time: ', end - start)
 
-# start testing
 print('start testing')
+start = time.time()
 h = hidden(testing['signal'], input_w)	# output of the hidden layer
 approx = np.matmul(h, output_w)		# approximated values
-error = mse(approx, testing['thickness'])	# mean square error
+error = mse(approx, testing['thickness'])
 print('mse: ', error)
+end = time.time()
+print('testing time: ', end - start)
+
+# save the network for future use 
+sio.savemat('network.mat', {'input_w': input_w, 'output_w': output_w, 'mean': m, 'n': n})
 
 # plot the first 100 samples 
 print('plot')
-expected = plt.scatter(np.linspace(0, 99, 100), testing['thickness'][0:100], color = 'red')
-approximated, = plt.plot(np.linspace(0, 99, 100), approx[0:100], color = 'black')
-plt.legend([expected, approximated], ['Expected output', 'Approximated model'])
-plt.xlabel('Signal index')
-plt.ylabel('Thickness')
-plt.show()
+plot_model(approx, testing['thickness'], n_points = 7000)
 
-sio.savemat('network.mat', {'input_w': input_w, 'output_w': output_w})
+###########################################################################################
+# test mse
+# n_nodes = 100	# number of node in the hidden layer
+# error = np.array([[]])	# initialize matrix to store all the mse 
+
+# while n_nodes <= training['signal'].shape[0]:
+# 	# start training the model
+# 	print('start training')
+# 	start = time.time()
+# 	np.random.seed(seed = None)
+# 	input_w = np.random.normal(size = (training['signal'].shape[1], n_nodes))	# randomize input weights of the network 
+# 	h = hidden(training['signal'], input_w)		# output of the hidden layer
+# 	output_w = np.linalg.lstsq(h, training['thickness'])[0]		# use least square to find the optimal output weight 
+# 	end = time.time()
+# 	print('training time ', n_nodes/100, ': ', end - start)
+
+# 	# start testing
+# 	print('start testing')
+# 	start = time.time()
+# 	h = hidden(testing['signal'], input_w)	# output of the hidden layer
+# 	approx = np.matmul(h, output_w)		# approximated values
+# 	error = np.insert(error, error.shape[1], mse(approx, testing['thickness']), axis = 1)	# mean square error
+# 	n_nodes += 100
+# 	end = time.time()
+# 	print('testing time: ', end - start)
+
+# plot the mse 
+# sio.savemat('error.mat', {'error': error})
+# plt.plot(np.linspace(100, n_nodes - 100, n_nodes/100 - 1), error[0, 0:69])
+# plt.xlabel('Number of nodes')
+# plt.ylabel('Mean square error')
+# plt.show()
+#################################################################################################

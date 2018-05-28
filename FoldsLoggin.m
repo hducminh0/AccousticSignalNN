@@ -4,7 +4,7 @@
 % Application au cas de l'étude des tubes - These Hajar.
 % -------------------------------------------------------------------------
 clear all
-% close all
+close all
 
 % -------------------------------------------------------------------------
 % Choix du cas à traiter
@@ -27,10 +27,10 @@ clear all
 %         % Vitesses des ondes transverses dans les couches
 %         vt = [1659 3100 2900] ;
 % end
-for s = 1:10
+for s = 1:10000
    
     s
-	data.thickness(s) = (round(rand() * 999) + 1)  * 10^-6;
+	data.thickness(s) = (round(rand() * 999) + 1)  * 10^-6
 	d = [0 data.thickness(s) 0] ;
 	% Densites
 	rho = [7700 2800 19254] ;
@@ -53,7 +53,7 @@ for s = 1:10
 	for ncouches = Ncouches:Ncouches
 	    % tic
 	    
-	    fc = 200e6 ; 					% Fréquence centrale du capteur
+	    fc = round(200 - 200*rand()*0.15) * 1e6 ; 					% Fréquence centrale du capteur
 	    
 	    nbpts = 65536 ; 				% Nombres de points temporels
 	    ti = 0 ; % -100e-2 ; 			% Temps initial
@@ -177,16 +177,13 @@ for s = 1:10
 	    signaltrans = ifft(sigfreqtrans);
 	    signalref = ifft(sigfreqref);
 	end
-	data.acc_signal(s, :) = signalref;
-
+	data.acc_signal(s, :) = awgn(real(signalref), 50);
+%     data.acc_signal(s, :) = real(signalref);
 % 	Temps = (1:length(signalref))*Deltat*1e6 ;
 % 	figure
 % 	plot(Temps, real((signalref))/max(real(signalref)), 'b', 'LineWidth', 2) ;
 % 	hold on
 % 	plot(Temps, imag((signalref))/max(real(signalref)), 'r', 'LineWidth', 2) ;
 end
-data.acc_signal = awgn(data.acc_signal, 10);
-% data.thickness = data.thickness';
-% save('test.mat', 'data');
-% length(frequence);
-% 
+data.thickness = data.thickness';
+save('data_10000_10_vf.mat', 'data');
