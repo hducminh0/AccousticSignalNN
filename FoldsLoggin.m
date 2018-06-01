@@ -3,7 +3,7 @@
 % par microscopie acoustique.
 % Application au cas de l'étude des tubes - These Hajar.
 % -------------------------------------------------------------------------
-clear all
+% clear all
 close all
 
 % -------------------------------------------------------------------------
@@ -177,7 +177,7 @@ for s = 1:1
 	    signaltrans = ifft(sigfreqtrans);
 	    signalref = ifft(sigfreqref);
 	end
-	data.acc_signal(s, :) = awgn(real(signalref), 50);
+	data.acc_signal(s, :) = awgn(real(signalref), 100);
 %     data.acc_signal(s, :) = real(signalref);
 % 	Temps = (1:length(signalref))*Deltat*1e6 ;
 % 	figure
