@@ -1,7 +1,7 @@
 import numpy as np 
 import matplotlib.pyplot as plt
-import scipy.io as sio
 import h5py as hp
+import scipy.io as sio
 
 def normalize(data):
 # normalize the data:
@@ -43,6 +43,10 @@ def hidden(signal, input_w, function = 'sigmoid'):
 # input_w: input weight of the hidden layer 
 	if function == 'sigmoid':
 		return sigmoid(np.matmul(signal, input_w))
+
+def hidden_inv(p):
+# inverse function of the hidden layer's sigmoid activation function
+	return (np.log(p) - np.log(1 - p))
 
 def kernel(signal, d = 1,  function = 'rbf'):
 # kernmel trick 
