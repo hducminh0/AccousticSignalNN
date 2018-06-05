@@ -18,24 +18,24 @@ n_nodes = 4700	# number of node in the hidden layer
 print('start training')
 start = time.time()
 np.random.seed(seed = None)
-input_w = np.random.normal(size = (training['signal'].shape[1], n_nodes))	# randomize input weights of the network 
-h = hidden(training['signal'], input_w)		# output of the hidden layer
-# output_w = np.linalg.lstsq(h, training['thickness'], rcond = None)[0]		# use least square to find the optimal output weight 
-output_w = np.matmul(np.linalg.pinv(h), training['thickness'])
+w_in = np.random.normal(size = (training['signal'].shape[1], n_nodes))	# randomize input weights of the network 
+h = hidden(training['signal'], w_in)		# output of the hidden layer
+# w_out = np.linalg.lstsq(h, training['thickness'], rcond = None)[0]		# use least square to find the optimal output weight 
+w_out = np.matmul(np.linalg.pinv(h), training['thickness'])
 end = time.time()
 print('training time: ', end - start)
 
 print('start testing')
 start = time.time()
-h = hidden(testing['signal'], input_w)	# output of the hidden layer
-approx = np.matmul(h, output_w)		# approximated values
+h = hidden(testing['signal'], w_in)	# output of the hidden layer
+approx = np.matmul(h, w_out)		# approximated values
 error = mse(approx, testing['thickness'])
 print('mse: ', error)
 end = time.time()
 print('testing time: ', end - start)
 
 # save the network for future use 
-sio.savemat('network.mat', {'input_w': input_w, 'output_w': output_w, 'mean': m, 'n': n})
+sio.savemat('network.mat', {'w_in': w_in, 'w_out': w_out, 'mean': m, 'n': n})
 
 # plot the first 100 samples 
 print('plot')
@@ -51,17 +51,17 @@ plot_model(approx, testing['thickness'])
 # 	print('start training')
 # 	start = time.time()
 # 	np.random.seed(seed = None)
-# 	input_w = np.random.normal(size = (training['signal'].shape[1], n_nodes))	# randomize input weights of the network 
-# 	h = hidden(training['signal'], input_w)		# output of the hidden layer
-# 	output_w = np.matmul(np.linalg.pinv(h), training['thickness'])
+# 	w_in = np.random.normal(size = (training['signal'].shape[1], n_nodes))	# randomize input weights of the network 
+# 	h = hidden(training['signal'], w_in)		# output of the hidden layer
+# 	w_out = np.matmul(np.linalg.pinv(h), training['thickness'])
 # 	end = time.time()
 # 	print('training time ', n_nodes/100, ': ', end - start)
 
 # 	# start testing
 # 	print('start testing')
 # 	start = time.time()
-# 	h = hidden(testing['signal'], input_w)	# output of the hidden layer
-# 	approx = np.matmul(h, output_w)		# approximated values
+# 	h = hidden(testing['signal'], w_in)	# output of the hidden layer
+# 	approx = np.matmul(h, w_out)		# approximated values
 # 	error = np.insert(error, error.shape[1], mse(approx, testing['thickness']), axis = 1)	# mean square error
 # 	n_nodes += 100
 # 	end = time.time()

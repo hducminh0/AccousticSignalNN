@@ -16,7 +16,7 @@ def bias(data):
 
 def split_set(signal, thickness):
 # split the input data into training and testing set
-	pos = round(len(signal) * 0.7)	# divide 70% of data as training set and the rest are for testing 
+	pos = round(len(signal) * 0.75)	# divide 70% of data as training set and the rest are for testing 
 	training = {'signal': signal[0:pos, :], 'thickness': thickness[0:pos, :]}	# construct the training set, signal is the input data, thickness is the expected output
 	testing = {'signal': signal[pos:, :], 'thickness': thickness[pos:, :]}	# construct the tetsting set
 	return training, testing
@@ -38,10 +38,23 @@ def mse(approx, expected):
 def sigmoid(x):
 	return 1/(1 + np.exp(-x))
 
-def hidden(signal, input_w):
-# ha node in the hidden layer of the neural network 
+def hidden(signal, input_w, function = 'sigmoid'):
+# hidden node in the hidden layer of the neural network 
 # input_w: input weight of the hidden layer 
-	return sigmoid(np.matmul(signal, input_w))
+	if function == 'sigmoid':
+		return sigmoid(np.matmul(signal, input_w))
+
+def kernel(signal, d = 1,  function = 'rbf'):
+# kernmel trick 
+	k = np.zeros([signal.shape[0], signal.shape[0]])
+	for i in range(0, signal.shape[0]):
+		for j in  range(0, signal.shape[0]):
+			if function == 'rbf':
+				k[i, j] = rbf(signal[i, :], signal[j, :], d)
+	return k
+
+def rbf(a, b, d):
+	return np.exp(-d * np.linalg.norm(a - b) ** 2)
 
 def import_raw(filename, signal = 'data/acc_signal', thickness = 'data/thickness'):
 # load the raw data for dimension reduction and training
@@ -54,16 +67,6 @@ def import_raw(filename, signal = 'data/acc_signal', thickness = 'data/thickness
 	testing['signal'] = bias(testing['signal'])	
 	training['signal'] = bias(training['signal'])	# add a bias column to the input signal
 	return training, testing, m, n
-
-def import_nn(filename, input_w = 'input_w', output_w = 'output_w'):
-# import the trained network 
-# filename: name of file to be loaded
-# input_w: key of the input weight of the network 
-# output_w: key of the output weight of the network 
-	nn = sio.loadmat(filename)
-	input_w = nn['input_w']
-	output_w = nn['output_w']
-	return input_w, output_w
 
 def plot_model(approx, expected, n_points = 100):
 # plot the first n_points points of approximated and expeted results 

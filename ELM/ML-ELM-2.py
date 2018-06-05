@@ -19,17 +19,17 @@ start = time.time()
 np.random.seed(seed = None)
 
 # first hidden layer h0 - autoencoder elm-ae
-in_w0 = np.random.normal(size = (training['signal'].shape[1], 1200))	# randomize input weights of h0
-in_w0, r = np.linalg.qr(in_w0)	# make orthogonal weight vectors
-h0 = hidden(training['signal'], in_w0)		# output of h0
-out_w0 = np.matmul(np.linalg.pinv(h0), training['signal'])	# tune output weight of h0
-training['signal'] = np.matmul(h0, out_w0)	# the input signal after autoencoder
+w0_in = np.random.normal(size = (training['signal'].shape[1], 1200))	# randomize input weights of h0
+w0_in, r = np.linalg.qr(w0_in)	# make orthogonal weight vectors
+h0 = hidden(training['signal'], w0_in)		# output of h0
+w0_out = np.matmul(np.linalg.pinv(h0), training['signal'])	# tune output weight of h0
+training['signal'] = np.matmul(h0, w0_out)	# the input signal after autoencoder
 
 # second hidden layer h1 - elm
-in_w1 = np.random.normal(size = (training['signal'].shape[1], 4100))	# randomize input weights of h1
-h1 = hidden(training['signal'], in_w1)		# output of h1
-# out_w1 = np.linalg.lstsq(h, training['thickness'], rcond = None)[0]		# use least square to find the optimal output weight 
-out_w1 = np.matmul(np.linalg.pinv(h1), training['thickness'])	# tune output weight for h1
+w1_in = np.random.normal(size = (training['signal'].shape[1], 4100))	# randomize input weights of h1
+h1 = hidden(training['signal'], w1_in)		# output of h1
+# w1_out = np.linalg.lstsq(h, training['thickness'], rcond = None)[0]		# use least square to find the optimal output weight 
+w1_out = np.matmul(np.linalg.pinv(h1), training['thickness'])	# tune output weight for h1
 end = time.time()
 
 print('training time: ', end - start)
@@ -38,19 +38,19 @@ print('start testing')
 start = time.time()
 
 # h0
-h0 = hidden(testing['signal'], in_w0)	# output of h0
-testing['signal'] = np.matmul(h0, out_w0)		# after autoencoder
+h0 = hidden(testing['signal'], w0_in)	# output of h0
+testing['signal'] = np.matmul(h0, w0_out)		# after autoencoder
 
 # h1
-h1 = hidden(testing['signal'], in_w1)
-approx = np.matmul(h1, out_w1)
+h1 = hidden(testing['signal'], w1_in)
+approx = np.matmul(h1, w1_out)
 error = mse(approx, testing['thickness'])
 print('mse: ', error)
 end = time.time()
 print('testing time: ', end - start)
 
 # save the network for future use 
-sio.savemat('network.mat', {'in_w0': in_w0, 'out_w0': out_w0, 'in_w1': in_w1, 'out_w1': out_w1, 'mean': m, 'n': n})
+sio.savemat('network.mat', {'w0_in': w0_in, 'w0_out': w0_out, 'w1_in': w1_in, 'w1_out': w1_out, 'mean': m, 'n': n})
 
 # plot the first 100 samples 
 print('plot')
@@ -65,26 +65,26 @@ plot_model(approx, testing['thickness'])
 # 	# start training the model
 # 	n_nodes += 100
 # 	start = time.time()
-# 	in_w0 = np.random.normal(size = (training['signal'].shape[1], n_nodes))	# randomize input weights of the network 
-# 	in_w0, r = np.linalg.qr(in_w0)
+# 	w0_in = np.random.normal(size = (training['signal'].shape[1], n_nodes))	# randomize input weights of the network 
+# 	w0_in, r = np.linalg.qr(w0_in)
 # 	# h = hidden(training['signal'], input_w)		# output of the hidden layer
-# 	h0 = hidden(training['signal'], in_w0)		# output of the hidden layer
-# 	out_w0 = np.matmul(np.linalg.pinv(h0), training['signal'])
+# 	h0 = hidden(training['signal'], w0_in)		# output of the hidden layer
+# 	w0_out = np.matmul(np.linalg.pinv(h0), training['signal'])
 
-# 	training['signal'] = np.matmul(h0, out_w0)
-# 	in_w1 = np.random.normal(size = (training['signal'].shape[1], 4100))	# randomize input weights of the network 
-# 	h1 = hidden(training['signal'], in_w1)		# output of the hidden layer
-# 	# out_w1 = np.linalg.lstsq(h, training['thickness'], rcond = None)[0]		# use least square to find the optimal output weight 
-# 	out_w1 = np.matmul(np.linalg.pinv(h1), training['thickness'])
+# 	training['signal'] = np.matmul(h0, w0_out)
+# 	w1_in = np.random.normal(size = (training['signal'].shape[1], 4100))	# randomize input weights of the network 
+# 	h1 = hidden(training['signal'], w1_in)		# output of the hidden layer
+# 	# w1_out = np.linalg.lstsq(h, training['thickness'], rcond = None)[0]		# use least square to find the optimal output weight 
+# 	w1_out = np.matmul(np.linalg.pinv(h1), training['thickness'])
 # 	end = time.time()
 # 	print('training time ', n_nodes/100, ': ', end - start)
 
 # 	# start testing
 # 	start = time.time()
-# 	h0 = hidden(testing['signal'], in_w0)	# output of the hidden layer
-# 	testing['signal'] = np.matmul(h0, out_w0)		# approximated values
-# 	h1 = hidden(testing['signal'], in_w1)
-# 	approx = np.matmul(h1, out_w1)
+# 	h0 = hidden(testing['signal'], w0_in)	# output of the hidden layer
+# 	testing['signal'] = np.matmul(h0, w0_out)		# approximated values
+# 	h1 = hidden(testing['signal'], w1_in)
+# 	approx = np.matmul(h1, w1_out)
 # 	error = np.insert(error, error.shape[1], mse(approx, testing['thickness']), axis = 1)	# mean square error
 # 	end = time.time()
 # 	print('testing time: ', end - start)
