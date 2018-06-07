@@ -17,6 +17,10 @@ print('prepare time: ', end - start)
 n_nodes = 4700	# number of node in the hidden layer
 print('start training')
 start = time.time()
+# random mapping 
+rm, r = np.linalg.qr(np.random.normal(size = (training['signal'].shape[1], 10000)))	# randomize input weights of h0
+training['signal'] = np.matmul(training['signal'], rm)
+
 np.random.seed(seed = None)
 w_in = np.random.normal(size = (training['signal'].shape[1], n_nodes))	# randomize input weights of the network 
 h = hidden(training['signal'], w_in)		# output of the hidden layer
@@ -27,6 +31,7 @@ print('training time: ', end - start)
 
 print('start testing')
 start = time.time()
+testing['signal'] = np.matmul(testing['signal'], rm)
 h = hidden(testing['signal'], w_in)	# output of the hidden layer
 approx = np.matmul(h, w_out)		# approximated values
 error = mse(approx, testing['thickness'])
@@ -35,7 +40,7 @@ end = time.time()
 print('testing time: ', end - start)
 
 # save the network for future use 
-sio.savemat('network.mat', {'w_in': w_in, 'w_out': w_out, 'mean': m, 'n': n})
+sio.savemat('network.mat', {'rm': rm, 'w_in': w_in, 'w_out': w_out, 'mean': m, 'n': n})
 
 # plot the first 100 samples 
 print('plot')
