@@ -74,9 +74,15 @@ def import_raw(filename, signal = 'data/acc_signal', thickness = 'data/thickness
 
 def plot_model(approx, expected, n_points = 100):
 # plot the first n_points points of approximated and expeted results 
-	expected = plt.scatter(np.linspace(0, n_points, n_points), expected[0:n_points], color = 'red')
+	sort_ex = np.array([[]])
+	for i in np.argsort(approx, axis = 0):
+		sort_ex = np.insert(sort_ex, sort_ex.shape[1], expected[i], axis = 1)
+	approx = np.sort(approx, axis = 0)
+	expected = plt.scatter(np.linspace(0, n_points, n_points), sort_ex.transpose()[0:n_points], color = 'red')
 	approx, = plt.plot(np.linspace(0, n_points, n_points), approx[0:n_points], color = 'black')
 	plt.legend([expected, approx], ['Expected output', 'Approximated model'])
 	plt.xlabel('Signal index')
 	plt.ylabel('Thickness')
 	plt.show()
+
+
