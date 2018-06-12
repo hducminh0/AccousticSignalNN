@@ -44,6 +44,8 @@ sio.savemat('network.mat', {'rm': rm, 'w_in': w_in, 'w_out': w_out, 'mean': m, '
 
 # plot the first 100 samples 
 print('plot')
+approx = approx * n + m
+testing['thickness'] = testing['thickness'] * n + m
 plot_model(approx, testing['thickness'])
 
 ###########################################################################################
