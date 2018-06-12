@@ -3,7 +3,7 @@
 % par microscopie acoustique.
 % Application au cas de l'étude des tubes - These Hajar.
 % -------------------------------------------------------------------------
-% clear all
+clear all
 close all
 
 % -------------------------------------------------------------------------
@@ -23,21 +23,37 @@ close all
 %         % Densites
 %         rho = [7700 2800 19254] ;
 %         % Vitesses des ondes longitudinales dans les couches
-%         vl = [4324 6420 5200] ;
+%         vl = [4324 6420 5400] ;
 %         % Vitesses des ondes transverses dans les couches
 %         vt = [1659 3100 2900] ;
 % end
+
+% 	%% Base de données des materiaux
+LiNbO3  = struct('rho',4700     ,'vl',7331  ,'vt',4300 );
+Cr      = struct('rho',7194     ,'vl',6608  ,'vt',4005 );
+Or      = struct('rho',19300    ,'vl',3240  ,'vt',1200 );
+Cyanolit= struct('rho',1050     ,'vl',2400*(1-0.01*i)  ,'vt',0.001);
+SiO2    = struct('rho',2150     ,'vl',5968*(1-0.00005*i)  ,'vt',3764 );
+H2O     = struct('rho',1000     ,'vl',1480  ,'vt',0.001);
+Al      = struct('rho',2700     ,'vl',6420  ,'vt',3040 );
+Acier   = struct('rho',8100     ,'vl',5900  ,'vt',3220 );%*(1+1i*0.00027)
+
 for s = 1:1
-   
     s
-	data.thickness(s) = (round(rand() * 999) + 1)  * 10^-6
-	d = [0 data.thickness(s) 0] ;
-	% Densites
-	rho = [7700 2800 19254] ;
-	% Vitesses des ondes longitudinales dans les couches
-	vl = [4324 6420 5200] ;
-	% Vitesses des ondes transverses dans les couches
-	vt = [1659 3100 2900] ;
+	% Thickness
+	Cr.thickness = (round(rand() * 4) + 1)  * 10^-8;
+	Or.thickness = (round(rand() * 4) + 1)  * 10^-8;
+	Cyanolit.thickness = (round(rand() * 9) + 1)  * 10^-6;
+	SiO2.thickness = (round(rand() * 600) + 200)  * 10^-6;
+	H2O.thickness = (round(rand() * 999) + 1)  * 10^-6;
+	data.thickness(s) = H2O.thickness;
+	d = [0 Cr.thickness Or.thickness Cyanolit.thickness Or.thickness Cr.thickness SiO2.thickness H2O.thickness 0] ;
+	% Densities 	rho = [LiNbO3 Cr Or Cyanolit Or Cr SiO2 H2O Al]
+	rho = [LiNbO3.rho Cr.rho Or.rho Cyanolit.rho Or.rho Cr.rho SiO2.rho H2O.rho Al.rho] ;
+	% longitudinql velocities
+	vl = [LiNbO3.vl Cr.vl Or.vl Cyanolit.vl Or.vl Cr.vl SiO2.vl H2O.vl Al.vl] ;
+	% Transverse velocities
+	vt = [LiNbO3.vt Cr.vt Or.vt Cyanolit.vt Or.vt Cr.vt SiO2.vt H2O.vt Al.vt] ;
 	d = fliplr(d) ;
 	rho = fliplr(rho) ;
 	vl = fliplr(vl) ;
@@ -57,7 +73,7 @@ for s = 1:1
 	    
 	    nbpts = 65536 ; 				% Nombres de points temporels
 	    ti = 0 ; % -100e-2 ; 			% Temps initial
-	    tfi = 5e-6 ; % 00e-3 ;			% Temps final
+	    tfi = 25e-6 ; % 00e-3 ;			% Temps final
 	    deltat = (tfi-ti)/(nbpts-1) ;	% Delta temps
 	    tt = ti:deltat:tfi ;				% Vecteur temps
 	    
@@ -177,13 +193,14 @@ for s = 1:1
 	    signaltrans = ifft(sigfreqtrans);
 	    signalref = ifft(sigfreqref);
 	end
-	data.acc_signal(s, :) = awgn(real(signalref), 100);
-%     data.acc_signal(s, :) = real(signalref);
+	data.acc_signal(s, :) = awgn(real(signalref), 50);
+    data.acc_signal(s, :) = real(signalref);
 % 	Temps = (1:length(signalref))*Deltat*1e6 ;
 % 	figure
 % 	plot(Temps, real((signalref))/max(real(signalref)), 'b', 'LineWidth', 2) ;
-% 	hold on
-% 	plot(Temps, imag((signalref))/max(real(signalref)), 'r', 'LineWidth', 2) ;
+	% hold on
+	% plot(Temps, imag((signalref))/max(real(signalref)), 'r', 'LineWidth', 2) ;
+%     xlabel('Time (micro s)') ;
 end
 % data.thickness = data.thickness';
 % save('data_10000_50_vf.mat', 'data');
