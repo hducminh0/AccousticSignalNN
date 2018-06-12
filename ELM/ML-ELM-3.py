@@ -55,10 +55,12 @@ end = time.time()
 print('testing time: ', end - start)
 
 # save the network for future use 
-sio.savemat('network.mat', {'w0_in': w0_in, 'w0_out': w0_out, 'w1_in': w1_in, 'w1_out': w1_out, 'w2_in': w2_in, 'w2_out': w2_out 'mean': m, 'n': n})
+sio.savemat('network.mat', {'w0_in': w0_in, 'w0_out': w0_out, 'w1_in': w1_in, 'w1_out': w1_out, 'w2_in': w2_in, 'w2_out': w2_out, 'mean': m, 'n': n})
 
 # plot the first 100 samples 
 print('plot')
+approx = approx * n + m
+testing['thickness'] = testing['thickness'] * n + m
 plot_model(approx, testing['thickness'])
 
 
