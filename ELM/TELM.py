@@ -54,7 +54,7 @@ print('prepare time: ', end - start)
 # print('plot')
 # approx = approx * n + m
 # testing['thickness'] = testing['thickness'] * n + m
-# plot_model(approx, testing['thickness'])
+# plot_model(approx, testing['thickness'], n_points = testing['thickness'].shape[0])
 
 ###########################################################################################
 # test mse

@@ -7,6 +7,7 @@ from model_func import *
 # filename = 'data_10.mat'
 # filename = 'data_5000.mat'
 filename = 'data_10000_50_vf.mat'
+filename = 'data_10000_50_vf_8layers.mat'
 
 print('read data')
 start = time.time()
@@ -17,11 +18,11 @@ print('prepare time: ', end - start)
 print('start training')
 start = time.time()
 np.random.seed(seed = None)
-# random mapping
-rm, r = np.linalg.qr(np.random.normal(size = (training['signal'].shape[1], 100)))	# randomize input weights of h0
-training['signal'] = hidden(training['signal'], rm)
+# # random mapping
+# rm, r = np.linalg.qr(np.random.normal(size = (training['signal'].shape[1], 100)))	# randomize input weights of h0
+# training['signal'] = hidden(training['signal'], rm)
 # first hidden layer h0 - autoencoder elm-ae
-w0_in = np.random.normal(size = (training['signal'].shape[1], 5000))	# randomize input weights of h0
+w0_in = np.random.normal(size = (training['signal'].shape[1], 3000))	# randomize input weights of h0
 w0_in, r = np.linalg.qr(w0_in)	# make orthogonal weight vectors
 h0 = hidden(training['signal'], w0_in)		# output of h0
 w0_out = np.matmul(np.linalg.pinv(h0), training['signal'])	# tune output weight of h0
@@ -36,8 +37,8 @@ print('training time: ', end - start)
 
 print('start testing')
 start = time.time()
-# random mapping
-testing['signal'] = hidden(testing['signal'], rm)
+# # random mapping
+# testing['signal'] = hidden(testing['signal'], rm)
 # h0
 h0 = hidden(testing['signal'], w0_in)	# output of h0
 testing['signal'] = np.matmul(h0, w0_out)		# after autoencoder
@@ -50,13 +51,13 @@ end = time.time()
 print('testing time: ', end - start)
 
 # save the network for future use 
-sio.savemat('network.mat', {'rm': rm, 'w0_in': w0_in, 'w0_out': w0_out, 'w1_in': w1_in, 'w1_out': w1_out, 'mean': m, 'n': n})
+sio.savemat('network.mat', {'w0_in': w0_in, 'w0_out': w0_out, 'w1_in': w1_in, 'w1_out': w1_out, 'mean': m, 'n': n})
 
 # plot the first 100 samples 
 print('plot')
 approx = approx * n + m
 testing['thickness'] = testing['thickness'] * n + m
-plot_model(approx, testing['thickness'])
+plot_model(approx, testing['thickness'], n_points = testing['thickness'].shape[0])
 
 ###########################################################################################
 # # test mse

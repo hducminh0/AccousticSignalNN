@@ -3,7 +3,7 @@
 % par microscopie acoustique.
 % Application au cas de l'étude des tubes - These Hajar.
 % -------------------------------------------------------------------------
-clear all
+% clear all
 close all
 
 % -------------------------------------------------------------------------
@@ -46,7 +46,7 @@ for s = 1:1
 	Cyanolit.thickness = (round(rand() * 9) + 1)  * 10^-6;
 	SiO2.thickness = (round(rand() * 600) + 200)  * 10^-6;
 	H2O.thickness = (round(rand() * 999) + 1)  * 10^-6;
-	data.thickness(s) = H2O.thickness;
+	data.thickness(s) = H2O.thickness
 	d = [0 Cr.thickness Or.thickness Cyanolit.thickness Or.thickness Cr.thickness SiO2.thickness H2O.thickness 0] ;
 	% Densities 	rho = [LiNbO3 Cr Or Cyanolit Or Cr SiO2 H2O Al]
 	rho = [LiNbO3.rho Cr.rho Or.rho Cyanolit.rho Or.rho Cr.rho SiO2.rho H2O.rho Al.rho] ;
@@ -193,14 +193,13 @@ for s = 1:1
 	    signaltrans = ifft(sigfreqtrans);
 	    signalref = ifft(sigfreqref);
 	end
-	data.acc_signal(s, :) = awgn(real(signalref), 50);
-    data.acc_signal(s, :) = real(signalref);
+	data.acc_signal(s, :) = real(awgn(real(signalref), 50));
 % 	Temps = (1:length(signalref))*Deltat*1e6 ;
 % 	figure
 % 	plot(Temps, real((signalref))/max(real(signalref)), 'b', 'LineWidth', 2) ;
-	% hold on
-	% plot(Temps, imag((signalref))/max(real(signalref)), 'r', 'LineWidth', 2) ;
+% 	hold on
+% 	plot(Temps, imag((signalref))/max(real(signalref)), 'r', 'LineWidth', 2) ;
 %     xlabel('Time (micro s)') ;
 end
 % data.thickness = data.thickness';
-% save('data_10000_50_vf.mat', 'data');
+% save('data_10000_50_vf_8layers.mat', 'data');
