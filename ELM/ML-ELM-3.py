@@ -19,15 +19,17 @@ print('prepare time: ', end - start)
 print('start training')
 start = time.time()
 np.random.seed(seed = None)
-
+# # random mapping
+# rm, r = np.linalg.qr(np.random.normal(size = (training['signal'].shape[1], 5000)))	# randomize input weights of h0
+# training['signal'] = np.matmul(training['signal'], rm)
 # first hidden layer h0 - autoencoder elm-ae
-w0_in = np.random.normal(size = (training['signal'].shape[1], 20))	# randomize input weights of h0
+w0_in = np.random.normal(size = (training['signal'].shape[1], 150))	# randomize input weights of h0
 w0_in, r = np.linalg.qr(w0_in)	# make orthogonal weight vectors
 h0 = hidden(training['signal'], w0_in)		# output of h0
 w0_out = np.matmul(np.linalg.pinv(h0), training['signal'])	# tune output weight of h0
 training['signal'] = np.matmul(h0, w0_out)	# the input signal after autoencoder
 # second hidden layer h1 - elm-ae
-w1_in = np.random.normal(size = (training['signal'].shape[1], 20))	# randomize input weights of h1
+w1_in = np.random.normal(size = (training['signal'].shape[1], 100))	# randomize input weights of h1
 w1_in, r = np.linalg.qr(w1_in)	# make orthogonal weight vectors
 h1 = hidden(training['signal'], w1_in)		# output of h1
 w1_out = np.matmul(np.linalg.pinv(h1), training['signal'])	# tune output weight of h1
@@ -42,6 +44,8 @@ print('training time: ', end - start)
 
 print('start testing')
 start = time.time()
+# # random mapping
+# testing['signal'] = np.matmul(testing['signal'], rm)
 # h0
 h0 = hidden(testing['signal'], w0_in)	# output of h0
 testing['signal'] = np.matmul(h0, w0_out)		# after autoencoder
@@ -57,7 +61,7 @@ end = time.time()
 print('testing time: ', end - start)
 
 # save the network for future use 
-sio.savemat('network.mat', {'w0_in': w0_in, 'w0_out': w0_out, 'w1_in': w1_in, 'w1_out': w1_out, 'w2_in': w2_in, 'w2_out': w2_out, 'mean': m, 'n': n})
+# sio.savemat('network.mat', {'w0_in': w0_in, 'w0_out': w0_out, 'w1_in': w1_in, 'w1_out': w1_out, 'w2_in': w2_in, 'w2_out': w2_out, 'mean': m, 'n': n})
 
 # plot the first 100 samples 
 print('plot')
@@ -122,7 +126,7 @@ plot_model(approx, testing['thickness'], n_points = testing['thickness'].shape[0
 # # plot the mse 
 # sio.savemat('error.mat', {'error': error})
 # print('min mse index: ', np.argmin(error))
-# plt.plot(np.linspace(100, n_nodes, n_nodes/n), error[0, :])
+# plt.plot(np.linspace(n, n_nodes, n_nodes/n), error[0, :])
 # plt.xlabel('Number of nodes')
 # plt.ylabel('Mean square error')
 # plt.show()

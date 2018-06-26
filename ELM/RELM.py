@@ -7,7 +7,8 @@ from model_func import *
 # filename = 'data_10_100.mat'
 # filename = 'data_5000.mat'
 # filename = 'data_10000_50_vf.mat'
-filename = 'data_10000_50_vf_8layers.mat'
+# filename = 'data_10000_50_vf_8layers.mat'
+filename = 'data_10000_100_8layers.mat'
 
 print('read data')
 start = time.time()
@@ -19,11 +20,11 @@ print('start training')
 start = time.time()
 np.random.seed(seed = None)
 # first hidden layer h0 random mapping
-rm = np.random.normal(size = (training['signal'].shape[1], 10000))	# randomize input weights of h0
+rm = np.random.normal(size = (training['signal'].shape[1], 1000))	# randomize input weights of h0
 rm, r = np.linalg.qr(rm)	# make orthogonal weight vectors
 training['signal'] = hidden(training['signal'], rm)		# output of h0
 # second hidden layer h1 - elm
-w1_in = np.random.normal(size = (training['signal'].shape[1], 500))	# randomize input weights of h1
+w1_in = np.random.normal(size = (training['signal'].shape[1], 4200))	# randomize input weights of h1
 h1 = hidden(training['signal'], w1_in)		# output of h1
 # w1_out = np.linalg.lstsq(h1, training['thickness'], rcond = None)[0]		# use least square to find the optimal output weight 
 w1_out = np.matmul(np.linalg.pinv(h1), training['thickness'])	# tune output weight for h1
