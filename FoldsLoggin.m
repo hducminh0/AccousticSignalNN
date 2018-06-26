@@ -3,7 +3,7 @@
 % par microscopie acoustique.
 % Application au cas de l'étude des tubes - These Hajar.
 % -------------------------------------------------------------------------
-% clear all
+clear all
 close all
 
 % -------------------------------------------------------------------------
@@ -38,15 +38,17 @@ H2O     = struct('rho',1000     ,'vl',1480  ,'vt',0.001);
 Al      = struct('rho',2700     ,'vl',6420  ,'vt',3040 );
 Acier   = struct('rho',8100     ,'vl',5900  ,'vt',3220 );%*(1+1i*0.00027)
 
-for s = 1:1
+for s = 1:10000
     s
 	% Thickness
-	Cr.thickness = (round(rand() * 4) + 1)  * 10^-8;
-	Or.thickness = (round(rand() * 4) + 1)  * 10^-8;
-	Cyanolit.thickness = (round(rand() * 9) + 1)  * 10^-6;
-	SiO2.thickness = (round(rand() * 600) + 200)  * 10^-6;
-	H2O.thickness = (round(rand() * 999) + 1)  * 10^-6;
-	data.thickness(s) = H2O.thickness
+	Cr.thickness = 20 * 10^-9;
+	Or.thickness = 200 * 10^-9;
+% 	Cyanolit.thickness = (round(rand() * 9) + 1)  * 10^-6;
+	Cyanolit.thickness = 5 * 10^-6;
+	SiO2.thickness = 400 * 10^-6;
+	H2O.thickness = (round(rand() * 200) + 300)  * 10^-6;
+	data.thickness(s) = H2O.thickness;
+% 	data.thickness(s, :) = [Cr.thickness Or.thickness Cyanolit.thickness Or.thickness Cr.thickness SiO2.thickness H2O.thickness];
 	d = [0 Cr.thickness Or.thickness Cyanolit.thickness Or.thickness Cr.thickness SiO2.thickness H2O.thickness 0] ;
 	% Densities 	rho = [LiNbO3 Cr Or Cyanolit Or Cr SiO2 H2O Al]
 	rho = [LiNbO3.rho Cr.rho Or.rho Cyanolit.rho Or.rho Cr.rho SiO2.rho H2O.rho Al.rho] ;
@@ -69,7 +71,7 @@ for s = 1:1
 	for ncouches = Ncouches:Ncouches
 	    % tic
 	    
-	    fc = round(200 - 200*rand()*0.15) * 1e6 ; 					% Fréquence centrale du capteur
+	    fc = 200 * 1e6 ; 					% Fréquence centrale du capteur
 	    
 	    nbpts = 65536 ; 				% Nombres de points temporels
 	    ti = 0 ; % -100e-2 ; 			% Temps initial
@@ -193,7 +195,8 @@ for s = 1:1
 	    signaltrans = ifft(sigfreqtrans);
 	    signalref = ifft(sigfreqref);
 	end
-	data.acc_signal(s, :) = real(awgn(real(signalref), 50));
+	data.acc_signal(s, :) = real(awgn(real(signalref), 100));
+%     signalref = data.acc_signal;
 % 	Temps = (1:length(signalref))*Deltat*1e6 ;
 % 	figure
 % 	plot(Temps, real((signalref))/max(real(signalref)), 'b', 'LineWidth', 2) ;
@@ -201,5 +204,5 @@ for s = 1:1
 % 	plot(Temps, imag((signalref))/max(real(signalref)), 'r', 'LineWidth', 2) ;
 %     xlabel('Time (micro s)') ;
 end
-% data.thickness = data.thickness';
-% save('data_10000_50_vf_8layers.mat', 'data');
+data.thickness = data.thickness';
+save('data_10000_100_vf_8layers.mat', 'data');
