@@ -38,28 +38,28 @@ H2O     = struct('rho',1000     ,'vl',1480  ,'vt',0.001);
 Al      = struct('rho',2700     ,'vl',6420  ,'vt',3040 );
 Acier   = struct('rho',8100     ,'vl',5900  ,'vt',3220 );%*(1+1i*0.00027)
 
-for s = 1:10000
+% Thickness
+Cr.thickness = 20 * 10^-9;
+Or.thickness = 200 * 10^-9;
+Cyanolit.thickness = 5 * 10^-6;
+SiO2.thickness = 400 * 10^-6;
+% Densities 	rho = [LiNbO3 Cr Or Cyanolit Or Cr SiO2 H2O Al]
+rho = [LiNbO3.rho Cr.rho Or.rho Cyanolit.rho Or.rho Cr.rho SiO2.rho H2O.rho Al.rho] ;
+% longitudinql velocities
+vl = [LiNbO3.vl Cr.vl Or.vl Cyanolit.vl Or.vl Cr.vl SiO2.vl H2O.vl Al.vl] ;
+% Transverse velocities
+vt = [LiNbO3.vt Cr.vt Or.vt Cyanolit.vt Or.vt Cr.vt SiO2.vt H2O.vt Al.vt] ;
+rho = fliplr(rho) ;
+vl = fliplr(vl) ;
+vt = fliplr(vt) ;
+tic
+for s = 1:10
     s
 	% Thickness
-	Cr.thickness = 20 * 10^-9;
-	Or.thickness = 200 * 10^-9;
-% 	Cyanolit.thickness = (round(rand() * 9) + 1)  * 10^-6;
-	Cyanolit.thickness = 5 * 10^-6;
-	SiO2.thickness = 400 * 10^-6;
-	H2O.thickness = (round(rand() * 200) + 300)  * 10^-6;
+	H2O.thickness = (rand() * 20 + 300)  * 10^-6;
 	data.thickness(s) = H2O.thickness;
-% 	data.thickness(s, :) = [Cr.thickness Or.thickness Cyanolit.thickness Or.thickness Cr.thickness SiO2.thickness H2O.thickness];
 	d = [0 Cr.thickness Or.thickness Cyanolit.thickness Or.thickness Cr.thickness SiO2.thickness H2O.thickness 0] ;
-	% Densities 	rho = [LiNbO3 Cr Or Cyanolit Or Cr SiO2 H2O Al]
-	rho = [LiNbO3.rho Cr.rho Or.rho Cyanolit.rho Or.rho Cr.rho SiO2.rho H2O.rho Al.rho] ;
-	% longitudinql velocities
-	vl = [LiNbO3.vl Cr.vl Or.vl Cyanolit.vl Or.vl Cr.vl SiO2.vl H2O.vl Al.vl] ;
-	% Transverse velocities
-	vt = [LiNbO3.vt Cr.vt Or.vt Cyanolit.vt Or.vt Cr.vt SiO2.vt H2O.vt Al.vt] ;
 	d = fliplr(d) ;
-	rho = fliplr(rho) ;
-	vl = fliplr(vl) ;
-	vt = fliplr(vt) ;
 
 	Ncouches = length(d);
 
@@ -205,4 +205,5 @@ for s = 1:10000
 %     xlabel('Time (micro s)') ;
 end
 data.thickness = data.thickness';
-save('data_10000_100_vf_8layers.mat', 'data');
+save('test.mat', 'data');
+toc
