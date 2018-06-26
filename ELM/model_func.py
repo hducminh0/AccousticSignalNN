@@ -3,24 +3,6 @@ import matplotlib.pyplot as plt
 import h5py as hp
 import scipy.io as sio
 
-def normalize(data):
-# normalize the data:
-	m = np.mean(data)	# mean of the input data 
-	n = max(data) - min(data)	
-	nl_data = (data -  m)/n 	# mean normalization 
-	return nl_data, m, n 	# return m and n so when we save the network we can get the actual value from the normalized one
-
-def bias(data):
-# add bias terms to the first column of the data
-	return np.insert(data, 0, 1, axis=1)
-
-def split_set(signal, thickness):
-# split the input data into training and testing set
-	pos = round(len(signal) * 0.75)	# divide 70% of data as training set and the rest are for testing 
-	training = {'signal': signal[0:pos, :], 'thickness': thickness[0:pos, :]}	# construct the training set, signal is the input data, thickness is the expected output
-	testing = {'signal': signal[pos:, :], 'thickness': thickness[pos:, :]}	# construct the tetsting set
-	return training, testing
-
 def open_file(filename, signal, thickness):
 # open the .mat file to extract the signal and thickness
 # filename: name of file to be loaded
@@ -30,6 +12,36 @@ def open_file(filename, signal, thickness):
 	signal = np.array(data[signal]).transpose()		# only take the real part of the signal as input 
 	thickness = np.array(data[thickness]).transpose()
 	return signal, thickness
+
+def normalize(data):
+# normalize the data:
+	m = np.mean(data)	# mean of the input data 
+	n = max(data) - min(data)	
+	nl_data = (data -  m)/n 	# mean normalization 
+	return nl_data, m, n 	# return m and n so when we save the network we can get the actual value from the normalized one
+
+def split_set(signal, thickness):
+# split the input data into training and testing set
+	pos = round(len(signal) * 0.75)	# divide 70% of data as training set and the rest are for testing 
+	training = {'signal': signal[0:pos, :], 'thickness': thickness[0:pos, :]}	# construct the training set, signal is the input data, thickness is the expected output
+	testing = {'signal': signal[pos:, :], 'thickness': thickness[pos:, :]}	# construct the tetsting set
+	return training, testing
+
+def bias(data):
+# add bias terms to the first column of the data
+	return np.insert(data, 0, 1, axis=1)
+
+def import_raw(filename, signal = 'data/acc_signal', thickness = 'data/thickness'):
+# load the raw data for dimension reduction and training
+# filename: name of file to be loaded
+# signal: key of the signal array in the dictionary
+# thickness: key of the thickness
+	signal, thickness = open_file(filename, signal, thickness)
+	thickness, m, n = normalize(thickness)
+	training, testing = split_set(signal, thickness)
+	testing['signal'] = bias(testing['signal'])	
+	training['signal'] = bias(training['signal'])	# add a bias column to the input signal
+	return training, testing, m, n
 
 def mse(approx, expected):
 # mean square error
@@ -59,18 +71,6 @@ def kernel(signal, d = 1,  function = 'rbf'):
 
 def rbf(a, b, d):
 	return np.exp(-d * np.linalg.norm(a - b) ** 2)
-
-def import_raw(filename, signal = 'data/acc_signal', thickness = 'data/thickness'):
-# load the raw data for dimension reduction and training
-# filename: name of file to be loaded
-# signal: key of the signal array in the dictionary
-# thickness: key of the thickness
-	signal, thickness = open_file(filename, signal, thickness)
-	thickness, m, n = normalize(thickness)
-	training, testing = split_set(signal, thickness)
-	testing['signal'] = bias(testing['signal'])	
-	training['signal'] = bias(training['signal'])	# add a bias column to the input signal
-	return training, testing, m, n
 
 def plot_model(approx, expected, n_points = 100):
 # plot the first n_points points of approximated and expeted results 
