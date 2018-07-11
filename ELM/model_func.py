@@ -60,18 +60,6 @@ def hidden_inv(p):
 # inverse function of the hidden layer's sigmoid activation function
 	return (np.log(p) - np.log(1 - p))
 
-def kernel(signal, d = 1,  function = 'rbf'):
-# kernmel trick 
-	k = np.zeros([signal.shape[0], signal.shape[0]])
-	for i in range(0, signal.shape[0]):
-		for j in  range(0, signal.shape[0]):
-			if function == 'rbf':
-				k[i, j] = rbf(signal[i, :], signal[j, :], d)
-	return k
-
-def rbf(a, b, d):
-	return np.exp(-d * np.linalg.norm(a - b) ** 2)
-
 def plot_model(approx, expected, n_points = 100):
 # plot the first n_points points of approximated and expeted results 
 	sort_ex = np.array([[]])
@@ -80,6 +68,14 @@ def plot_model(approx, expected, n_points = 100):
 	approx = np.sort(approx, axis = 0)
 	expected = plt.scatter(np.linspace(0, n_points, n_points), sort_ex.transpose()[0:n_points], color = 'red')
 	approx, = plt.plot(np.linspace(0, n_points, n_points), approx[0:n_points], color = 'black')
+	
+	# sort_app = np.array([[]])
+	# for i in np.argsort(expected, axis = 0):
+	# 	sort_app = np.insert(sort_app, sort_app.shape[1], approx[i], axis = 1)
+	# expected = np.sort(expected, axis = 0)
+	# expected = plt.scatter(np.linspace(0, n_points, n_points), expected[0:n_points], color = 'red')
+	# approx, = plt.plot(np.linspace(0, n_points, n_points), sort_app.transpose()[0:n_points], color = 'black')
+
 	plt.legend([expected, approx], ['Expected output', 'Approximated model'])
 	plt.xlabel('Signal index')
 	plt.ylabel('Thickness')

@@ -4,11 +4,18 @@ import scipy.io as sio
 import time
 from model_func import *
 
-# filename = 'data_10_100.mat'
-# filename = 'data_5000.mat'
-# filename = 'data_10000_50_vf.mat'
+
+filename = 'data_10000_100_vcyo_8layers.mat'
+
+# filename = 'data_10000_100_vf_8layers.mat'
+# filename = 'data_10000_75_vf_8layers.mat'
 # filename = 'data_10000_50_vf_8layers.mat'
-filename = 'data_10000_100_8layers.mat'
+# filename = 'data_10000_25_vf_8layers.mat'
+
+# filename = 'data_10000_100_8layers.mat'
+# filename = 'data_10000_75_8layers.mat'
+# filename = 'data_10000_50_8layers.mat'
+# filename = 'data_10000_25_8layers.mat'
 
 print('read data')
 start = time.time()
@@ -16,23 +23,21 @@ training, testing, m, n = import_raw(filename)	# import data
 end = time.time()
 print('prepare time: ', end - start)
 
-n_nodes = 5200
+n_nodes = 4000
 print('start training')
 start = time.time()
 np.random.seed(seed = None)
-# # random mapping
-# rm, r = np.linalg.qr(np.random.normal(size = (training['signal'].shape[1], 1000)))	# randomize input weights of h0
-# training['signal'] = np.matmul(training['signal'], rm)
 w_i0 = np.random.normal(size = (training['signal'].shape[1], n_nodes))	# randomize weight btwn input layer and first hidden layer h0 
 # w_i0, r = np.linalg.qr(w_i0)	# make orthogonal weight vectors
+
 # put 2 hidden layers as 1
 h0 = hidden(training['signal'], w_i0)	# output of the combined hidden layer
 w_out = np.matmul(np.linalg.pinv(h0), training['thickness'])	# output weight of the network 
+
 # separate 2 layers 
 h1 = hidden(training['thickness'], np.linalg.pinv(w_out))
 w_01 = np.matmul(np.linalg.pinv(h0), hidden_inv(h1))		# weight btwn layer h0 and h1 
 h1 = hidden(h0, w_01)	# actual output of h1
-# h1 = hidden(w_01, h0)	# actual output of h1
 w_out = np.matmul(np.linalg.pinv(h1), training['thickness'])
 end = time.time()
 print('training time: ', end - start)

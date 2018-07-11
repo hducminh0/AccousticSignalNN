@@ -4,12 +4,17 @@ import scipy.io as sio
 import time
 from model_func import *
 
-# filename = 'data_10000_1000.mat'
-# filename = 'data_5000.mat'
-# filename = 'data_10000_50_vf.mat'
+filename = 'data_10000_100_vcyo_8layers.mat'
+
+# filename = 'data_10000_100_vf_8layers.mat'
+# filename = 'data_10000_75_vf_8layers.mat'
 # filename = 'data_10000_50_vf_8layers.mat'
-# filename = 'data_1000_100_vf_8layers.mat'
-filename = 'data_10000_100_8layers.mat'
+# filename = 'data_10000_25_vf_8layers.mat'
+
+# filename = 'data_10000_100_8layers.mat'
+# filename = 'data_10000_75_8layers.mat'
+# filename = 'data_10000_50_8layers.mat'
+# filename = 'data_10000_25_8layers.mat'
 
 print('read data')
 start = time.time()
@@ -17,28 +22,19 @@ training, testing, m, n = import_raw(filename)
 end = time.time()
 print('prepare time: ', end - start)
 
-n_nodes = 5000	# number of node in the hidden layer
-# gamma = 0.0001
-# C = 0.00000001
+n_nodes = 4700	# number of node in the hidden layer
 print('start training')
 start = time.time()
-# # random mapping 
-# rm, r = np.linalg.qr(np.random.normal(size = (training['signal'].shape[1], 10000)))	# randomize input weights of h0
-# training['signal'] = np.matmul(training['signal'], rm)
-
 np.random.seed(seed = None)
 w_in = np.random.normal(size = (training['signal'].shape[1], n_nodes))	# randomize input weights of the network 
-
 h = hidden(training['signal'], w_in)		# output of the hidden layer
-w_out = np.linalg.lstsq(h, training['thickness'], rcond = None)[0]		# use least square to find the optimal output weight 
-# w_out = np.matmul(np.matmul(h.transpose(), np.linalg.pinv(np.matmul(h, h.transpose()) + np.identity(h.shape[0]) * training['signal'].shape[0]/gamma + np.ones([h.shape[0], h.shape[0]])/C)), training['thickness'])
-# w_out = np.matmul(np.linalg.pinv(h), training['thickness'])
+# w_out = np.linalg.lstsq(h, training['thickness'], rcond = None)[0]		# use least square to find the optimal output weight 
+w_out = np.matmul(np.linalg.pinv(h), training['thickness'])		# use pseudo inverse to find the optimal output weight 
 end = time.time()
 print('training time: ', end - start)
 
 print('start testing')
 start = time.time()
-# testing['signal'] = np.matmul(testing['signal'], rm)
 h = hidden(testing['signal'], w_in)	# output of the hidden layer
 approx = np.matmul(h, w_out)		# approximated values
 error = mse(approx, testing['thickness'])
@@ -47,7 +43,7 @@ end = time.time()
 print('testing time: ', end - start)
 
 # save the network for future use 
-sio.savemat('network.mat', {'w_in': w_in, 'w_out': w_out, 'mean': m, 'n': n})
+# sio.savemat('network.mat', {'w_in': w_in, 'w_out': w_out, 'mean': m, 'n': n})
 
 # plot the first 100 samples 
 print('plot')
